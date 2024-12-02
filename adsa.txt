@@ -1,0 +1,1302 @@
+1.1 Write a C program that checks whether the given binary tree is AVL tree or not.
+
+code:
+#include<stdio.h>
+#include<stdlib.h>
+struct node
+{
+	int data;
+	struct node *left ,*right;
+};
+struct node *createNode(int data)
+{
+	struct node *newnode = (struct node*)malloc(sizeof(struct node));
+	newnode->left = newnode->right = NULL;
+	newnode->data = data;
+	return newnode;
+}
+struct node *insertNode(struct node *node , int data)
+{
+	if(node == NULL)
+		return createNode(data);
+	if(data <= node->data)
+	{
+		node->left = insertNode(node->left , data);
+	}
+	if(data > node->data)
+	{
+		node->right = insertNode(node->right , data);
+	}
+	return node;
+}
+int isAvl(struct node *node)
+{
+	if(node == NULL)
+		return 1;
+	int leftHeight = nodeHeight(node->left);
+	int rightHeight = nodeHeight(node->right);
+	if(abs(leftHeight - rightHeight) > 1)
+		return 0;
+	return isAvl(node->left) && isAvl(node->right);
+}
+int nodeHeight(struct node *node)
+{
+	if(node == NULL)
+	return 0;
+	int leftHeight = nodeHeight(node->left);
+	int rightHeight = nodeHeight(node->right);
+	return 1 + (leftHeight > rightHeight ? leftHeight : rightHeight);
+}
+int main()
+{
+	struct node *root = NULL;
+	int choice,data;
+	while(1)
+	{
+		printf("\n1.Insert\n2.Is given Binary tree is AVL Tree\n3.Exit\n\nEnter your choice:");
+		scanf("%d",&choice);
+		switch(choice)
+		{
+			case 1: printf("Enter data to insert:");
+					scanf("%d",&data);
+					root = insertNode(root,data);
+					break;
+					
+			case 2: if(isAvl(root))
+						printf("\nYES\n");
+					else
+						printf("\nNO\n");
+					break;
+						
+			case 3: exit(0);
+			default :printf("Invalid choice!");
+		}
+	}
+} 
+
+1.2.Write a program to perform binary search on a sorted array. Compute the number of comparisons and determine the time complexity for different input sizes.
+
+code:
+#include<stdio.h>
+
+int main()
+{
+	int size , comparisions , key, left , right , mid , i , temp = 0;
+	printf("Enter the size of the array:");
+	scanf("%d",&size);
+	
+	int arr[size];
+	printf("Enter the %d elements in sorted order:\n",size);
+	for(i = 0; i < size ; i++)
+	{
+		scanf("%d",&arr[i]);
+	}
+	
+	printf("Enter the key element to search:");
+	scanf("%d",&key);
+	
+	left = 0;
+	right = size -1;
+	comparisions = 0;
+	
+	while(left <= right)
+	{
+		comparisions++;
+		mid = (left + right)/2;
+		if(key == arr[mid])
+		{
+			printf("Given element %d is found at %d index",key,mid);
+			temp = 1;
+			break;
+		}
+		else if(key < arr[mid])
+		{
+			right = mid -1;
+		}
+		else
+		{
+			left = mid + 1;
+		}
+	}
+	if(temp == 0)
+	{
+		printf("\nGiven element not found\n");
+	}
+	printf("\n\nNo of comaprisions = %d",comparisions);
+	printf("\n\nTime Complexity is O(log %d)",size);
+}
+
+____________________________________________________________________________________________________________________________________________________________________________________________
+2.1 Construct Min and Max heap using arrays and show the working of all the heap operations.
+
+code:
+#include <stdio.h>
+#include <stdlib.h>
+#define SIZE 100
+void swap(int *a, int *b)
+{
+    int temp = *a;
+    *a = *b;
+    *b = temp;
+}
+void heapifyMax(int arr[], int n, int i)
+{
+    int largest = i;
+    int left = 2 * i + 1;
+    int right = 2 * i + 2;
+
+    if (left < n && arr[left] > arr[largest])
+    {
+        largest = left;
+    }
+
+    if (right < n && arr[right] > arr[largest])
+    {
+        largest = right;
+    }
+
+    if (largest != i)
+    {
+        swap(&arr[largest], &arr[i]);
+        heapifyMax(arr, n, largest);
+    }
+}
+void insertMaxHeap(int arr[], int *n, int num)
+{
+    int i = *n;
+    arr[(*n)++] = num;
+    while (i > 0 && arr[(i - 1) / 2] < arr[i])
+    {
+        swap(&arr[(i - 1) / 2], &arr[i]);
+        i = (i - 1) / 2;
+    }
+}
+void deleteMaxHeap(int arr[], int *n)
+{
+    arr[0] = arr[--(*n)];
+    heapifyMax(arr, *n, 0);
+}
+
+int extractMax(int arr[], int *n)
+{
+    if (*n == 0)
+    {
+        printf("Heap is empty!\n");
+        return -1;
+    }
+
+    int root = arr[0];
+    return root;
+}
+void heapifyMin(int arr[], int n, int i)
+{
+    int smallest = i;
+    int left = 2 * i + 1;
+    int right = 2 * i + 2;
+
+    if (left < n && arr[left] < arr[smallest])
+    {
+        smallest = left;
+    }
+
+    if (right < n && arr[right] < arr[smallest])
+    {
+        smallest = right;
+    }
+
+    if (smallest != i)
+    {
+        swap(&arr[smallest], &arr[i]);
+        heapifyMin(arr, n, smallest);
+    }
+}
+void insertMinHeap(int arr[], int *n, int num)
+{
+    int i = *n;
+    arr[(*n)++] = num;
+    while (i > 0 && arr[(i - 1) / 2] > arr[i])
+    {
+        swap(&arr[(i - 1) / 2], &arr[i]);
+        i = (i - 1) / 2;
+    }
+}
+void deleteMinHeap(int arr[], int *n)
+{
+    arr[0] = arr[--(*n)];
+    heapifyMin(arr, *n, 0);
+}
+int extractMin(int arr[], int *n)
+{
+    if (*n == 0)
+    {
+        printf("Heap is empty!\n");
+        return -1;
+    }
+
+    int root = arr[0];
+    return root;
+}
+void printMaxHeap(int arr[], int n)
+{
+	int i;
+    printf("Max Heap: ");
+    for (i = 0; i < n; i++)
+    {
+        printf("%d -> ", arr[i]);
+    }
+    printf("NULL\n");
+}
+void printMinHeap(int arr[], int n)
+{
+	int i;
+    printf("Min Heap: ");
+    for (i = 0; i < n; i++)
+    {
+        printf("%d -> ", arr[i]);
+    }
+    printf("NULL\n");
+}
+int main()
+{
+    int maxHeap[SIZE], minHeap[SIZE];
+    int maxHeapSize = 0, minHeapSize = 0;
+    int i , n =6;
+    int heapInsert[] = {40 ,60 ,10 ,20 ,50 ,30 };
+    for (i = 0; i < n; i++)
+    {
+        insertMaxHeap(maxHeap, &maxHeapSize, heapInsert[i]);
+        insertMinHeap(minHeap, &minHeapSize, heapInsert[i]);
+    }
+    printf("\nBefore any operations:\n");
+    printMinHeap(minHeap, minHeapSize);
+    printMaxHeap(maxHeap, maxHeapSize);
+    while (1)
+    {
+        int choice;
+        printf("\n1.Delete \n2.Extract\n3.Display Both Heaps\n4.Exit\nEnter your choice: ");
+        scanf("%d", &choice);
+
+        if (choice == 1) 
+        {
+            if (minHeapSize == 0 || maxHeapSize == 0)
+            {
+                printf("Heap is empty!\n");
+            }
+            else
+            {
+                printf("Min element %d deleted.\n", minHeap[0]);
+                deleteMinHeap(minHeap, &minHeapSize);
+                printf("Max element %d deleted.\n", maxHeap[0]);
+                deleteMaxHeap(maxHeap, &maxHeapSize);
+            }
+        }
+        else if (choice == 2)  
+        {
+            if (minHeapSize == 0 || maxHeapSize == 0)
+            {
+                printf(" Heap is empty!\n");
+            }
+            else
+            {
+                printf("Root (Min) element %d extracted.\n", extractMin(minHeap, &minHeapSize));
+                printf("Root (Max) element %d extracted.\n", extractMax(maxHeap, &maxHeapSize));
+            }
+        }
+        else if (choice == 3) 
+        {
+            printMinHeap(minHeap, minHeapSize);
+            printMaxHeap(maxHeap, maxHeapSize);
+        }
+        else if (choice == 4) 
+        {
+            break;
+        }
+        else
+        {
+            printf("Invalid choice!\n");
+        }
+    }
+    return 0;
+}
+
+2.2 Implement BFT for a graph using adjacency matrix.
+
+code:
+#include<stdio.h>
+#define MAXVERTICES 100
+int no_of_vertices;
+int adjacencyMatrix[MAXVERTICES][MAXVERTICES];
+void bfs(int start)
+{
+    int visited[MAXVERTICES] = {0};
+    int queue[MAXVERTICES], front, rear, i;
+    front = rear = 0;
+    visited[start] = 1;
+    queue[rear++] = start;
+    
+    while (front < rear)
+    {
+        int currentVertex = queue[front++];
+        printf("%d, ", currentVertex);
+        
+        for (i = 0; i < no_of_vertices; i++)
+        {
+            if (adjacencyMatrix[currentVertex][i] == 1 && visited[i] != 1)
+            {
+                visited[i] = 1;
+                queue[rear++] = i;
+            }
+        }
+    }
+}
+int main()
+{
+    int start, i, j;
+    printf("Enter no of vertices: ");
+    scanf("%d", &no_of_vertices);
+    printf("Enter the adjacency Matrix:\n");
+    for (i = 0; i < no_of_vertices; i++)
+    {
+        for (j = 0; j < no_of_vertices; j++)
+        {
+            scanf("%d", &adjacencyMatrix[i][j]);
+        }
+    }
+    
+    printf("Enter the starting vertex: ");
+    scanf("%d", &start);
+    printf("BFS traversal starting from vertex:\n");
+    bfs(start);
+    return 0;
+}
+
+____________________________________________________________________________________________________________________________________________________________________________________________
+
+3.1 Implement a C program that shows the working of LL and RR rotations in an AVL tree.
+code:
+#include<stdio.h>
+#include<stdlib.h>
+
+struct node
+{
+	int data;
+	struct node *left;
+	struct node *right;
+	int height;
+};
+
+int heightNode(struct node *node)
+{
+	return node == NULL ? 0 : node->height;
+}
+
+int maxHeight(struct node *Lnode , struct node *Rnode)
+{
+	return heightNode(Lnode) > heightNode(Rnode) ? heightNode(Lnode) : heightNode(Rnode);
+}
+
+struct node *leftRotate(struct node *node)
+{
+	struct node *Rnode = node->right;
+	struct node *LRnode = Rnode->left;
+	Rnode->left = node;
+	node->right = LRnode;
+	node->height = maxHeight(node->left , node->right) + 1;
+	Rnode->height  = maxHeight(Rnode->left , Rnode->right) + 1;
+	return Rnode;
+}
+
+struct node *rightRotate(struct node *node)
+{
+	struct node *Lnode = node->left;
+	struct node *RLnode = Lnode->right;
+	Lnode->right = node;
+	node->left = RLnode;
+	node->height = maxHeight(node->left , node->right) + 1;
+	Lnode->height = maxHeight(Lnode->left , Lnode->right) + 1;
+	return Lnode;
+}
+
+void preorder(struct node *node)
+{
+	if(node != NULL)
+	{
+		printf("%d -> ",node->data);
+		preorder(node->left);
+		preorder(node->right);
+	}
+}
+int balanceFactor(struct node *node)
+{
+	if(node == NULL)
+	{
+		return 0;
+	}
+	return heightNode(node->left) - heightNode(node->right);
+}
+
+
+struct node *createNode(int data)
+{
+	struct node *newnode = (struct node*)malloc(sizeof(struct node));
+	newnode->data = data;
+	newnode->left = newnode->right = NULL;
+	newnode->height = 1;
+	return newnode;
+}
+
+struct node *insertNode(struct node *node , int data)
+{
+	if(node == NULL)
+	{
+		return createNode(data);
+	}
+	else if(data < node->data)
+	{
+		node->left = insertNode(node->left , data);
+	}
+	else if(data > node->data)
+	{
+		node->right = insertNode(node->right , data);
+	}
+	else
+	{
+		return node;
+	}
+	node->height = maxHeight(node->left , node->right) + 1;
+	int balancefactor = balanceFactor(node);
+	if(balancefactor > 1 && data < node->left->data)
+	{
+		return rightRotate(node);
+	}
+	if(balancefactor > 1 && data > node->left->data)
+	{
+		node->left = leftRotate(node->left);
+		return rightRotate(node);
+	}
+	if(balancefactor < -1 && data > node->right->data)
+	{
+		return leftRotate(node);
+	}
+	if(balancefactor < -1 && data < node->right->data)
+	{
+		node->right = rightRotate(node->right);
+		return leftRotate(node);
+	}
+	return node;
+}
+int main()
+{
+	struct node *root = NULL;
+	while(1)
+	{
+		int ch;
+		printf("1.Insert\n2.Display\n3.Exit\nEnter your choice:");
+		scanf("%d",&ch);
+		if(ch == 1)
+		{
+			int data;
+			printf("Enter data to insert:");
+			scanf("%d",&data);
+			root = insertNode(root,data);
+		}
+		else if(ch == 2)
+		{
+			printf("Preorder traversal of the given AVL tree:");
+			preorder(root);
+			printf("NULL\n");
+		}
+		else if(ch == 3)
+		{
+			break;
+		}
+		else
+		{
+			printf("Invalid choice!\n");
+		}
+	}
+	return 0;
+}
+
+3.2 Implement DFT for a graph using adjacency list.
+
+code:
+#include <stdio.h>
+#include <stdlib.h>
+int no_vertices;
+
+struct node {
+    int data;
+    struct node *next;
+};
+void readgraph(struct node *ad[]);
+void dfs(struct node *ad[], int start, int visited[]);
+int main() {
+    int start;
+    printf("Enter the total number of vertices: ");
+    scanf("%d", &no_vertices);
+
+    int visited[no_vertices];
+    struct node *adj[no_vertices];
+
+    for (int i = 0; i < no_vertices; i++) {
+        adj[i] = NULL;
+        visited[i] = 0;
+    }
+    readgraph(adj);
+    printf("Enter the vertex from which you want to start: ");
+    scanf("%d", &start);
+    printf("DFS: ");
+    dfs(adj, start, visited);
+    printf("\n");
+    return 0;
+}
+void readgraph(struct node *ad[]) {
+    struct node *newnode;
+    int i, j, k, data;
+    for (i = 0; i < no_vertices; i++) {
+        struct node *last = NULL;
+        printf("\nEnter the number of vertices adjacent  to vertex %d: ", i);
+        scanf("%d", &k);
+        for (j = 1; j <= k; j++) {
+            printf("Enter the value of neighbor %d of vertex  %d: ", j, i);
+            scanf("%d", &data);
+            newnode = (struct node *)malloc(sizeof(struct node));
+            newnode->data = data;
+            newnode->next = NULL;
+            if (ad[i] == NULL) {
+                ad[i] = newnode;
+            } else {
+                last->next = newnode;
+            }
+            last = newnode;
+        }
+    }
+}
+void dfs(struct node *ad[], int start, int visited[]) {
+    visited[start] = 1;
+    printf("%d ", start);
+    struct node *ptr = ad[start];
+    while (ptr != NULL) {
+        if (visited[ptr->data] == 0) {
+            dfs(ad, ptr->data, visited);
+        }
+        ptr = ptr->next;
+    }
+}
+
+____________________________________________________________________________________________________________________________________________________________________________________________
+
+4.1 Write a C program for quick sort and display the execution time for different input variations.
+
+code:
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+void swap(int *a, int *b) {
+    int temp = *a;
+    *a = *b;
+    *b = temp;
+}
+int partition(int arr[], int low, int high) {
+    int pivot = arr[high];
+    int i = low - 1;
+    int j;
+    for (j = low; j < high; j++) {
+        if (arr[j] <= pivot) {
+            i++;
+            swap(&arr[i], &arr[j]);
+        }
+    }
+    swap(&arr[i + 1], &arr[high]);
+    return i + 1;
+}
+void quickSort(int arr[], int low, int high) {
+    if (low < high) {
+        int pi = partition(arr, low, high);
+        
+        quickSort(arr, low, pi - 1);
+        quickSort(arr, pi + 1, high);
+    }
+}
+void printArray(int arr[], int size) {
+    int i;
+    for (i = 0; i < size; i++) {
+        printf("%d ", arr[i]);
+    }
+    printf("\n");
+}
+int main() {
+    srand(time(NULL));
+    int size = 1000;
+    int *arr = malloc(size * sizeof(int));
+    int i;
+    printf("Original Array: ");
+    for (i = 0; i < size; i++) {
+        arr[i] = rand() % 10000;
+        printf("%d ", arr[i]);
+    }
+    printf("\n");
+    clock_t start = clock();
+    quickSort(arr, 0, size - 1);
+    clock_t end = clock();
+    double time_spent = (double)(end - start) / CLOCKS_PER_SEC;
+    printf("Sorted Array:   ");
+    printArray(arr, size);
+    printf("Execution Time: %.6f seconds\n", time_spent);
+    free(arr);
+    return 0;
+}
+
+4.2 Write a C program to find the min and max elements from the set using divide and conquer techniques.
+
+code:
+#include <stdio.h>
+#include <limits.h>
+void findMinMax(int arr[], int low, int high, int *min, int *max) {
+    if (low == high) {
+        *min = *max = arr[low];
+    } else if (high == low + 1) {
+        if (arr[low] < arr[high]) {
+            *min = arr[low];
+            *max = arr[high];
+        } else {
+            *min = arr[high];
+            *max = arr[low];
+        }
+    } else {
+        int mid = (low + high) / 2;
+        int leftMin, leftMax, rightMin, rightMax;
+        findMinMax(arr, low, mid, &leftMin, &leftMax);
+        findMinMax(arr, mid + 1, high, &rightMin, &rightMax);
+        *min = (leftMin < rightMin) ? leftMin : rightMin;
+        *max = (leftMax > rightMax) ? leftMax : rightMax;
+    }
+}
+int main() {
+    int arr[] = {12, 3, 5, 7, 19, 1,0, 158, 9, 8};
+    int n = sizeof(arr) / sizeof(arr[0]);
+    int min, max;
+    findMinMax(arr, 0, n - 1, &min, &max);
+    printf("Minimum element: %d\n", min);
+    printf("Maximum element: %d\n", max);
+    return 0;
+}
+
+____________________________________________________________________________________________________________________________________________________________________________________________
+
+5.1 Write a C program for merge sort and display the execution time for different input variations.
+
+code:
+#include<stdio.h>
+#include<time.h>
+void merge(int arr[] ,int left , int mid , int right)
+{
+	int i,j,k;
+	int n1 = mid - left +1;
+	int n2 = right-mid;
+	int larr[n1];
+	int rarr[n2];
+	for(i = 0;i<n1;i++)
+	{
+		larr[i] = arr[left+i];
+	}
+	for(i = 0;i<n2;i++)
+	{
+		rarr[i] = arr[mid + 1+i];
+	}
+	i=j=0;
+	k=left;
+	while(i<n1&&j<n2)
+	{
+		if(larr[i] <= rarr[j])
+		{
+			arr[k] = larr[i++];
+		}
+		else
+		{
+			arr[k] = rarr[j++];
+		}
+		k++;
+	}
+	while(i<n1)
+	{
+		arr[k++] = larr[i++];
+	}
+	while(j<n2)
+	{
+		arr[k++] = rarr[j++];
+	}
+	
+}
+void mergesort( int arr[] ,int left , int right)
+{
+	if(left < right)
+	{
+		int mid = (left+right)/2;
+		mergesort(arr,left,mid);
+		mergesort(arr,mid+1,right);
+		merge(arr,left,mid,right);
+	}
+}
+void printArray(int arr[], int size) {
+    int i;
+    for (i = 0; i < size; i++) {
+        printf("%d ", arr[i]);
+    }
+    printf("\n");
+}
+int main()
+{
+    int arr[] = {1,42,5,8,3,98,6,23,7,9,34,234,2,34,546,897,879};
+    int size = sizeof(arr) / sizeof(arr[0]);
+    clock_t start = clock();
+    mergesort(arr, 0, size - 1);
+    clock_t end = clock();
+    double time_spent = (double)(end - start) / CLOCKS_PER_SEC;
+    printf("Sorted Array:   ");
+    printArray(arr, size);
+    printf("Execution Time: %.6f seconds\n", time_spent);
+    return 0;
+}
+
+5.2 Implement Fibonacci series using dynamic programming. Compare the time complexities of both methods (O(2^n)) for recursion vs. O(n) for DP).
+
+code:
+#include <stdio.h>
+#include <time.h>
+long long fib_recursive(int n) {
+    if (n <= 1) {
+        return n;
+    }
+    return fib_recursive(n - 1) + fib_recursive(n - 2);
+}
+void fib_dp(int n) {
+    long long dp[n+1];
+    dp[0] = 0;
+    dp[1] = 1;
+    int i;
+    for (i = 2; i <= n; i++) {
+        dp[i] = dp[i - 1] + dp[i - 2];
+    }
+    printf("Fibonacci Series using DP: ");
+    for (i = 0; i <= n; i++) {
+        printf("%lld ", dp[i]);
+    }
+    printf("\n");
+}
+int main() {
+    int n;
+    printf("Enter the value of n for Fibonacci series: ");
+    scanf("%d", &n);
+    clock_t start_recursive = clock();
+    printf("Fibonacci Series using Recursion: ");
+    int i;
+    for (i = 0; i <= n; i++) {
+        printf("%lld ", fib_recursive(i));
+    }
+    clock_t end_recursive = clock();
+    double time_recursive = (double)(end_recursive - start_recursive) / CLOCKS_PER_SEC;
+    printf("\nTime taken by Recursive approach: %f seconds\n", time_recursive);
+    clock_t start_dp = clock();
+    fib_dp(n);
+    clock_t end_dp = clock();
+    double time_dp = (double)(end_dp - start_dp) / CLOCKS_PER_SEC;
+    printf("Time taken by Dynamic Programming approach: %f seconds\n", time_dp);
+    return 0;
+}
+____________________________________________________________________________________________________________________________________________________________________________________________
+
+6.1 Write a program to implement Dijkstra's Algorithm for finding the shortest path in a weighted graph. Measure the time complexity based on the number of vertices V and edges E.
+
+code:
+#include <stdio.h>
+#include <limits.h>
+
+#define V 7 
+
+int minDistance(int dist[], int sptSet[]) {
+    int min = INT_MAX, min_index;
+    for (int v = 0; v < V; v++) {
+        if (sptSet[v] == 0 && dist[v] <= min) {
+            min = dist[v];
+            min_index = v;
+        }
+    }
+    return min_index;
+}
+
+void dijkstra(int graph[V][V], int src) {
+    int dist[V];
+    int sptSet[V]; 
+
+    for (int i = 0; i < V; i++) {
+        dist[i] = INT_MAX;
+        sptSet[i] = 0;
+    }
+    dist[src] = 0; 
+    for (int count = 0; count < V - 1; count++) {
+        int u = minDistance(dist, sptSet); 
+        sptSet[u] = 1; 
+        for (int v = 0; v < V; v++) {
+            if (!sptSet[v] && graph[u][v] && dist[u] != INT_MAX && dist[u] + graph[u][v] < dist[v]) {
+                dist[v] = dist[u] + graph[u][v];
+            }
+        }
+    }
+    printf("Vertex   Distance from Source\n");
+    for (int i = 0; i < V; i++) {
+        printf("%d \t\t %d\n", i, dist[i]);
+    }
+}
+
+int main() {
+       int graph[V][V] = {
+        {0, 10, 0, 0, 0, 30, 0},
+        {0, 0, 20, 0, 0, 0, 0},
+        {0, 0, 0, 15, 5, 0, 0},
+        {0, 0, 0, 0, 12, 0, 20},
+        {0, 0, 0, 0, 0, 0, 7},
+        {0, 0, 0, 0, 0, 0, 35},
+        {0, 0, 0, 0, 0, 0, 0}
+    };
+    
+    dijkstra(graph, 0); 
+    return 0;
+}
+
+6.2 Implement Job sequencing with deadlines using greedy method.
+
+#include <stdio.h>
+
+struct Job {
+    int id, deadline, profit;
+};
+
+void jobSequencing(struct Job jobs[], int n) {
+	
+	 for (int i = 0; i < n - 1; i++) {
+        for (int j = 0; j < n - i - 1; j++) {
+            if (jobs[j].profit < jobs[j + 1].profit) {
+                struct Job temp = jobs[j];
+                jobs[j] = jobs[j + 1];
+                jobs[j + 1] = temp;
+            }
+        }
+    }
+    int slot[n];
+    int totalProfit = 0;     
+    for (int i = 0; i < n; i++) {
+        slot[i] = -1;
+    }
+
+    for (int i = 0; i < n; i++) {
+        for (int j = jobs[i].deadline - 1; j >= 0; j--) {
+            if (slot[j] == -1) {
+                slot[j] = i;  // Assign job to slot
+                totalProfit += jobs[i].profit;  // Add profit
+                break;
+            }
+        }
+    }
+
+    printf("Job sequence: ");
+    for (int i = 0; i < n; i++) {
+        if (slot[i] != -1) {
+            printf("Job %d ", jobs[slot[i]].id);
+        }
+    }
+    printf("\nTotal Profit: %d\n", totalProfit);
+}
+
+int main() {
+    struct Job jobs[] = {
+        {5, 3, 1}, 
+		{4, 3, 5}, 
+		{3, 1, 10},
+        {2, 2, 15}, 
+		{1, 2, 20}
+    };
+    
+    int n = sizeof(jobs) / sizeof(jobs[0]);
+    
+    jobSequencing(jobs, n);
+    
+    return 0;
+}
+
+____________________________________________________________________________________________________________________________________________________________________________________________
+
+7.1.Solve the N-Queens problem using Backtracking.
+7.2.Count the number of recursive calls and derive the time complexity for N.
+
+code:
+#include <stdio.h>
+#include <stdbool.h>
+
+#define N 4
+
+void printSolution(int board[N][N]) {
+    for (int i = 0; i < N; i++) {
+        for (int j = 0; j < N; j++) {
+            if (board[i][j]) {
+                printf("Q%d ", board[i][j]);           
+  } else {
+                printf("0 ");            }
+        }
+        printf("\n");
+    }
+}
+
+bool isSafe(int board[N][N], int row, int col) {
+    for (int i = 0; i < col; i++) {
+        if (board[row][i]) return false; 
+    }
+    for (int i = row, j = col; i >= 0 && j >= 0; i--, j--) {
+        if (board[i][j]) return false; 
+    }
+    for (int i = row, j = col; j >= 0 && i < N; i++, j--) {
+        if (board[i][j]) return false; 
+    }
+    return true;
+}
+
+bool solveNQUtil(int board[N][N], int col) {
+    if (col >= N) return true; 
+
+    for (int i = 0; i < N; i++) {
+        if (isSafe(board, i, col)) {
+            board[i][col] = col + 1; 
+            if (solveNQUtil(board, col + 1)) return true; 
+            board[i][col] = 0;
+        }
+    }
+    return false; 
+}
+
+void solveNQ() {
+    int board[N][N] = {0}; 
+
+    if (solveNQUtil(board, 0)) {
+        printSolution(board);
+    } else {
+        printf("Solution does not exist\n"); 
+    }
+}
+
+int main() {
+    solveNQ(); 
+    return 0;
+}
+____________________________________________________________________________________________________________________________________________________________________________________________
+
+
+8.1 Implement 0/1 Knapsack problem using dynamic programming. Measure the time complexity for different input sizes and weights (O(nW), where n is the number of items and W is the capacity).
+
+code:
+#include <stdio.h>
+
+#define MAX_ITEMS 100
+
+int knapsack(int W, int wt[], int val[], int n) {
+    int dp[n+1][W+1];
+
+    for (int i = 0; i <= n; i++) {
+        for (int w = 0; w <= W; w++) {
+            if (i == 0 || w == 0) {
+                dp[i][w] = 0;
+            } else if (wt[i-1] <= w) {
+                dp[i][w] = (val[i-1] + dp[i-1][w-wt[i-1]] > dp[i-1][w]) ? 
+                            (val[i-1] + dp[i-1][w-wt[i-1]]) : dp[i-1][w];
+            } else {
+                dp[i][w] = dp[i-1][w];
+            }
+        }
+    }
+
+    return dp[n][W];
+}
+
+int main() {
+    int val[] = {60, 100, 120};
+    int wt[] = {10, 20, 30};
+    int W = 50;
+    int n = sizeof(val) / sizeof(val[0]);
+    
+    printf("Maximum value in Knapsack = %d\n", knapsack(W, wt, val, n));
+    return 0;
+}
+
+8.2 Write a C program to find the min and max elements from the set using divide and conquer techniques.
+
+code:
+#include <stdio.h>
+#include <limits.h>
+void findMinMax(int arr[], int low, int high, int *min, int *max) {
+    if (low == high) {
+        *min = *max = arr[low];
+    } else if (high == low + 1) {
+        if (arr[low] < arr[high]) {
+            *min = arr[low];
+            *max = arr[high];
+        } else {
+            *min = arr[high];
+            *max = arr[low];
+        }
+    } else {
+        int mid = (low + high) / 2;
+        int leftMin, leftMax, rightMin, rightMax;
+        findMinMax(arr, low, mid, &leftMin, &leftMax);
+        findMinMax(arr, mid + 1, high, &rightMin, &rightMax);
+        *min = (leftMin < rightMin) ? leftMin : rightMin;
+        *max = (leftMax > rightMax) ? leftMax : rightMax;
+    }
+}
+int main() {
+    int arr[] = {12, 3, 5, 7, 19, 1,0, 158, 9, 8};
+    int n = sizeof(arr) / sizeof(arr[0]);
+    int min, max;
+    findMinMax(arr, 0, n - 1, &min, &max);
+    printf("Minimum element: %d\n", min);
+    printf("Maximum element: %d\n", max);
+    return 0;
+}
+____________________________________________________________________________________________________________________________________________________________________________________________
+
+9.1.	Write a C program to search an element in an AVL tree.
+
+code:
+#include <stdio.h>
+#include <stdlib.h>
+
+struct node {
+    int data;
+    struct node *left;
+    struct node *right;
+};
+
+struct node *createNode(int data) {
+    struct node *newNode = (struct node *)malloc(sizeof(struct node));
+    newNode->data = data;
+    newNode->left = NULL;
+    newNode->right = NULL;
+    return newNode;
+}
+
+struct node *createStaticAVLTree() {
+    struct node *root = createNode(30);
+    root->left = createNode(20);
+    root->right = createNode(40);
+    root->left->left = createNode(10);
+    root->left->right = createNode(25);
+    root->right->left = createNode(35);
+    root->right->right = createNode(50);
+    return root;
+}
+
+void preorder(struct node *node) {
+    if (node != NULL) {
+        printf("%d -> ", node->data);
+        preorder(node->left);
+        preorder(node->right);
+    }
+}
+
+int searchNode(struct node *root, int key) {
+    if (root == NULL) {
+        return 0;
+    }
+    if (root->data == key) {
+        return 1;
+    } else if (key < root->data) {
+        return searchNode(root->left, key);
+    } else {
+        return searchNode(root->right, key);
+    }
+}
+
+int main() {
+    struct node *root = createStaticAVLTree();
+    while (1) {
+        int ch;
+        printf("\nMenu:\n1. Display\n2. Search\n3. Exit\nEnter your choice: ");
+        scanf("%d", &ch);
+
+        if (ch == 1) {
+            printf("Preorder traversal of the AVL tree: ");
+            preorder(root);
+            printf("NULL\n");
+        } else if (ch == 2) {
+            int key;
+            printf("Enter element to search: ");
+            scanf("%d", &key);
+            if (searchNode(root, key)) {
+                printf("Element %d found in the AVL tree.\n", key);
+            } else {
+                printf("Element %d not found in the AVL tree.\n", key);
+            }
+        } else if (ch == 3) {
+            break;
+        } else {
+            printf("Invalid choice! Please try again.\n");
+        }
+    }
+    return 0;
+}
+
+9.2 Construct Max Heap using arrays and display it.
+
+code:
+#include <stdio.h>
+#include <stdlib.h>
+#define SIZE 100
+
+void swap(int *a, int *b) {
+    int temp = *a;
+    *a = *b;
+    *b = temp;
+}
+
+void heapifyMax(int arr[], int n, int i) {
+    int largest = i;
+    int left = 2 * i + 1;
+    int right = 2 * i + 2;
+
+    if (left < n && arr[left] > arr[largest]) {
+        largest = left;
+    }
+
+    if (right < n && arr[right] > arr[largest]) {
+        largest = right;
+    }
+
+    if (largest != i) {
+        swap(&arr[largest], &arr[i]);
+        heapifyMax(arr, n, largest);
+    }
+}
+
+void insertMaxHeap(int arr[], int *n, int num) {
+    int i = *n;
+    arr[(*n)++] = num;
+    while (i > 0 && arr[(i - 1) / 2] < arr[i]) {
+        swap(&arr[(i - 1) / 2], &arr[i]);
+        i = (i - 1) / 2;
+    }
+}
+
+void printMaxHeap(int arr[], int n) {
+    printf("Max Heap: ");
+    for (int i = 0; i < n; i++) {
+        printf("%d -> ", arr[i]);
+    }
+    printf("NULL\n");
+}
+
+int main() {
+    int maxHeap[SIZE];
+    int maxHeapSize = 0;
+    int heapInsert[] = {40, 60, 10, 20, 50, 30,23,21,0,56,76,45,456,-34};
+    int n = sizeof(heapInsert)/sizeof(heapInsert[0]);
+
+    for (int i = 0; i < n; i++) {
+        insertMaxHeap(maxHeap, &maxHeapSize, heapInsert[i]);
+    }
+
+    printf("\nConstructed Max Heap:\n");
+    printMaxHeap(maxHeap, maxHeapSize);
+
+    return 0;
+}
+
+____________________________________________________________________________________________________________________________________________________________________________________________
+
+10.1 Write a C program that displays the median of an array using quick sort.
+
+code:
+#include <stdio.h>
+
+void quicksort(int arr[], int low, int high) {
+    if (low < high) {
+        int pivot = arr[high];
+        int i = low - 1;
+        for (int j = low; j < high; j++) {
+            if (arr[j] <= pivot) {
+                i++;
+                int temp = arr[i];
+                arr[i] = arr[j];
+                arr[j] = temp;
+            }
+        }
+        int temp = arr[i + 1];
+        arr[i + 1] = arr[high];
+        arr[high] = temp;
+
+        int pi = i + 1;
+
+        quicksort(arr, low, pi - 1);
+        quicksort(arr, pi + 1, high);
+    }
+}
+
+float findMedian(int arr[], int n) {
+    quicksort(arr, 0, n - 1);
+    if (n % 2 != 0) {
+        return arr[n / 2];
+    } else {
+        return (arr[(n - 1) / 2] + arr[n / 2]) / 2.0;
+    }
+}
+
+int main() {
+    int arr[] = {12, 3, 5, 7, 19, 1};
+    int n = sizeof(arr) / sizeof(arr[0]);
+    printf("Median: %.2f\n", findMedian(arr, n));
+    return 0;
+}
+
+10.2 Write a C program to implement binary search using divide and conquer technique.
+
+code:
+#include<stdio.h>
+
+int binarySearch(int arr[], int left, int right, int key, int *comparisions) {
+    if (left <= right) {
+        (*comparisions)++;
+        int mid = (left + right) / 2;
+        if (key == arr[mid]) {
+            return mid;
+        }
+        if (key < arr[mid]) {
+            return binarySearch(arr, left, mid - 1, key, comparisions);
+        }
+        return binarySearch(arr, mid + 1, right, key, comparisions);
+    }
+    return -1;
+}
+
+int main() {
+    int size, key, comparisions = 0, result;
+    printf("Enter the size of the array:");
+    scanf("%d", &size);
+    
+    int arr[size];
+    printf("Enter the %d elements in sorted order:\n", size);
+    for (int i = 0; i < size; i++) {
+        scanf("%d", &arr[i]);
+    }
+    
+    printf("Enter the key element to search:");
+    scanf("%d", &key);
+    
+    result = binarySearch(arr, 0, size - 1, key, &comparisions);
+    
+    if (result != -1) {
+        printf("Given element %d is found at %d index\n", key, result);
+    } else {
+        printf("\nGiven element not found\n");
+    }
+    
+    printf("\nNo of comparisons = %d", comparisions);
+    printf("\nTime Complexity is O(log %d)", size);
+}
